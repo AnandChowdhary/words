@@ -175,7 +175,6 @@
 							"version" => "4.1",
 							"updated" => true,
 							"id" => $post_url,
-							"post" => $post,
 						], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 					} else {
 						echo json_encode([
@@ -226,7 +225,6 @@
 						"api" => "words",
 						"version" => "4.1",
 						"created" => true,
-						"post" => $post,
 					], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 				} else {
 					echo json_encode([

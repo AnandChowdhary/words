@@ -26,3 +26,121 @@ It looks something like this:
 ```
 
 The `password` in this file is an output of `password_hash("example_password", PASSWORD_DEFAULT)`. You should use the same function to generate a hash of your password and store it in this file.
+
+## REST API
+
+All requests (except when generating a new token) need to be authenticated with a `token` header.
+
+### `POST /` to get a new token
+
+Request body:
+
+```
+{
+	"password": "example_password"
+}
+```
+
+Response body:
+
+```
+{
+    "api": "words",
+    "version": "4.1",
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHBpcmVzIjoiMjAxOC0wMy0wNiAxMjoyOTo1MiJ9.Coe969vqWQDmd34G04Y5HxOhOaz5citBOr5yEjxI6j0",
+    "expires": "2018-03-06 12:29:52"
+}
+```
+
+### `GET /posts` to get a list of all posts
+
+Response body:
+
+```
+{
+    "api": "words",
+    "version": "4.1",
+    "posts": [
+        {
+            "id": "20180305104246d5bfde2cdc.json",
+            "title": "Post title has been edited",
+            "date": "2018-03-05 11:26:44"
+        },
+        {
+            "id": "20180305113204b375272648.json",
+            "title": "Post title",
+            "date": "2018-03-05 11:32:04"
+        }
+    ]
+}
+```
+
+### `PUT /posts` to create a new post
+
+Request body:
+
+```
+{
+	"title": "Post title",
+	"body": "<p>This is an example post!</p>"
+}
+```
+
+Response body:
+
+```
+{
+    "api": "words",
+    "version": "4.1",
+    "created": true
+}
+```
+
+### `GET /post/{id}` to get a specific post
+
+Response body:
+
+```
+{
+    "api": "words",
+    "version": "4.1",
+    "post": {
+        "title": "Post title has been edited",
+        "date": "2018-03-05 11:26:44",
+        "body": "<p>This is an example post!</p>"
+    }
+}
+```
+
+### `DELETE /post/{id}` to delete a specific post
+
+Response body:
+
+```
+{
+    "api": "words",
+    "version": "4.1",
+    "deleted": true
+}
+```
+
+### `PUT /post/{id}` to create a new post
+
+Request body:
+
+```
+{
+	"title": "Updated post title",
+	"body": "<p>This is an example post which has been updated!</p>"
+}
+```
+
+Response body:
+
+```
+{
+    "api": "words",
+    "version": "4.1",
+    "updated": true
+}
+```
