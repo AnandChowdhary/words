@@ -1,0 +1,200 @@
+{
+	"info": {
+		"name": "Words",
+		"_postman_id": "c16926b6-0e35-2631-e880-43c45993a617",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get a new token",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"password\": \"example_password\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8888/words-backend/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"words-backend",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get a list of all posts",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHBpcmVzIjoiMjAxOC0wMy0wNiAxMTozNzowNyJ9.hB2yRfmK9nIlhVHdiXedD2FYKD8_TEjU_fDaJpRo7Lc"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:8888/words-backend/posts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"words-backend",
+						"posts"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Create a new post",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHBpcmVzIjoiMjAxOC0wMy0wNiAxMTozNzowNyJ9.hB2yRfmK9nIlhVHdiXedD2FYKD8_TEjU_fDaJpRo7Lc"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"title\": \"Post title\",\n\t\"body\": \"<p>This is an example post!</p>\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8888/words-backend/posts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"words-backend",
+						"posts"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get a specific post",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHBpcmVzIjoiMjAxOC0wMy0wNiAxMTozNzowNyJ9.hB2yRfmK9nIlhVHdiXedD2FYKD8_TEjU_fDaJpRo7Lc"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:8888/words-backend/post/201803051042382e557b31bf.json",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"words-backend",
+						"post",
+						"201803051042382e557b31bf.json"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a specific post",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHBpcmVzIjoiMjAxOC0wMy0wNiAxMTozNzowNyJ9.hB2yRfmK9nIlhVHdiXedD2FYKD8_TEjU_fDaJpRo7Lc"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:8888/words-backend/post/201803051042382e557b31bf.json",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"words-backend",
+						"post",
+						"201803051042382e557b31bf.json"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Update a specific post",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHBpcmVzIjoiMjAxOC0wMy0wNiAxMTozNzowNyJ9.hB2yRfmK9nIlhVHdiXedD2FYKD8_TEjU_fDaJpRo7Lc"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"title\": \"Post title\",\n\t\"body\": \"<p>This is an example post!</p>\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8888/words-backend/post/20180305104246d5bfde2cdc.json",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"words-backend",
+						"post",
+						"20180305104246d5bfde2cdc.json"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"id": "cdd03c6d-18a6-4e4c-b897-92c3367eecd3",
+			"key": "URL",
+			"value": "http://localhost:8888/words-backend/",
+			"type": "text"
+		}
+	]
+}
