@@ -27,6 +27,16 @@ It looks something like this:
 
 The `password` in this file is an output of `password_hash("example_password", PASSWORD_DEFAULT)`. You should use the same function to generate a hash of your password and store it in this file.
 
+An example post looks like then when saved:
+
+```
+{
+    "title": "TmZRWXZZVDNBM21LWWJ1WW9Fd1FzZz09",
+    "date": "2018-03-05 11:33:20",
+    "body": "R2d5SkkrTTJrVWlCWjZubkU4T3VvTElPRU1mdzNkM1cySFJGTmNJTTlGWT0="
+}
+```
+
 ## REST API
 
 All requests (except when generating a new token) need to be authenticated with a `token` header.
