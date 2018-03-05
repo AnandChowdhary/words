@@ -124,7 +124,7 @@ Response body:
 }
 ```
 
-### `PUT /post/{id}` to create a new post
+### `PUT /post/{id}` to update a specific post
 
 Request body:
 
