@@ -2,6 +2,7 @@
 
 	require "vendor/autoload.php";
 	use \Firebase\JWT\JWT;
+	ini_set("max_execution_time", 300);
 
 	if (isset($_SERVER["HTTP_ORIGIN"])) {
 		header("Access-Control-Allow-Origin: {$_SERVER["HTTP_ORIGIN"]}");
@@ -233,6 +234,38 @@
 						"error" => "field"
 					], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 				}
+			} else {
+				echo json_encode([
+					"api" => "words",
+					"version" => "4.1",
+					"error" => "Unauthenticated"
+				], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+			}
+		}
+	});
+
+	Flight::route("GET /backup", function() {
+		header("Content-Type: application/json");
+		if (json_last_error() === JSON_ERROR_NONE) {
+			$decoded = JWT::decode(isset($_SERVER["HTTP_TOKEN"]) ? $_SERVER["HTTP_TOKEN"] : null, $GLOBALS["key"], array("HS256"));
+			if ($decoded && ($decoded->expires > (new DateTime("now"))->format("Y-m-d H:i:s"))) {
+				$zip = new ZipArchive();
+				$backupFileName = "backups/" . (new DateTime("now"))->format("Y-m-d-H-i-s") . ".zip";
+				if ($zip->open($backupFileName, ZIPARCHIVE::CREATE) !== TRUE) {
+					die("Could not open archive");
+				}
+				$metas = array_diff(scandir($GLOBALS["post_directory"]), array(".", ".."));
+				foreach ($metas as $meta => $val) {
+					$file = $GLOBALS["post_directory"] . $val;
+					$content = file_get_contents($file);
+					$zip->addFromString(pathinfo($file, PATHINFO_BASENAME), $content);
+				}
+				$zip->close();
+				echo json_encode([
+					"api" => "words",
+					"version" => "4.1",
+					"url" => str_replace("/backup", "", (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]") . "/" . $backupFileName,
+				], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 			} else {
 				echo json_encode([
 					"api" => "words",
