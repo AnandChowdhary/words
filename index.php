@@ -69,14 +69,15 @@
 				$metas = array_diff(scandir("./words"), array(".", ".."));
 				foreach ($metas as $meta => $val) {
 					array_push($files, [
-						"title" => json_decode(file_get_contents("./words/$val"))->title,
+						"id" => $val,
+						"title" => encrypt_decrypt("decrypt", json_decode(file_get_contents("./words/$val"))->title),
 						"date" => json_decode(file_get_contents("./words/$val"))->date,
 					]);
 				}
 				echo json_encode([
 					"api" => "words",
 					"version" => "4.1",
-					"result" => $files,
+					"posts" => $files,
 				], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 			} else {
 				echo json_encode([
@@ -85,6 +86,62 @@
 					"error" => "Unauthenticated"
 				], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 			}
+		}
+	});
+
+	Flight::route("GET /post/@post_url", function($post_url) {
+		header("Content-Type: application/json");
+		if (!isset($_SERVER["HTTP_TOKEN"])) {
+			exit();
+		}
+		$decoded = JWT::decode(isset($_SERVER["HTTP_TOKEN"]) ? $_SERVER["HTTP_TOKEN"] : null, $GLOBALS["key"], array("HS256"));
+		if ($decoded && ($decoded->expires > (new DateTime("now"))->format("Y-m-d H:i:s"))) {
+			$post = json_decode(file_get_contents("./words/$post_url"));
+			echo json_encode([
+				"api" => "words",
+				"version" => "4.1",
+				"post" => [
+					"title" => encrypt_decrypt("decrypt", $post->title),
+					"date" => $post->date,
+					"body" => encrypt_decrypt("decrypt", $post->body),
+				],
+			], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+		} else {
+			echo json_encode([
+				"api" => "words",
+				"version" => "4.1",
+				"error" => "Unauthenticated"
+			], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+		}
+	});
+
+	Flight::route("DELETE /post/@post_url", function($post_url) {
+		header("Content-Type: application/json");
+		if (!isset($_SERVER["HTTP_TOKEN"])) {
+			exit();
+		}
+		$decoded = JWT::decode(isset($_SERVER["HTTP_TOKEN"]) ? $_SERVER["HTTP_TOKEN"] : null, $GLOBALS["key"], array("HS256"));
+		if ($decoded && ($decoded->expires > (new DateTime("now"))->format("Y-m-d H:i:s"))) {
+			if (file_exists("./words/$post_url")) {
+				unlink("./words/$post_url");
+				echo json_encode([
+					"api" => "words",
+					"version" => "4.1",
+					"deleted" => true
+				], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+			} else {
+				echo json_encode([
+					"api" => "words",
+					"version" => "4.1",
+					"error" => "No such file"
+				], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+			}
+		} else {
+			echo json_encode([
+				"api" => "words",
+				"version" => "4.1",
+				"error" => "Unauthenticated"
+			], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 		}
 	});
 
@@ -102,13 +159,13 @@
 					$error = true;
 				}
 				if (!$error) {
-					$currentDate = (new DateTime("now"))->format("Y-m-d H:i:s");
+					$currentDate = (new DateTime("now"))->format("YmdHis");
 					$post = [
 						"title" => encrypt_decrypt("encrypt", $data->title),
-						"date" => $currentDate,
+						"date" => (new DateTime("now"))->format("Y-m-d H:i:s"),
 						"body" => encrypt_decrypt("encrypt", $data->body)
 					];
-					file_put_contents("./words/" . $currentDate . "-" . substr(md5($currentDate), 0, 10) . ".json", json_encode($post, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+					file_put_contents("./words/" . $currentDate . substr(md5($currentDate), 0, 10) . ".json", json_encode($post, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
 					echo json_encode([
 						"api" => "words",
 						"version" => "4.1",
