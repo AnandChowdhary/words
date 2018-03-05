@@ -22,6 +22,7 @@
 	$GLOBALS["post_directory"] = $metadata->files;
 	$GLOBALS["key"] = $metadata->key;
 	$GLOBALS["iv"] = $metadata->iv;
+	$GLOBALS["tokentime"] = $metadata->token_valid_for;
 	// The password in `meta.json` is a result of password_hash("example_password", PASSWORD_DEFAULT)
 	$GLOBALS["password"] = $metadata->password;
 
@@ -46,13 +47,13 @@
 		if (json_last_error() === JSON_ERROR_NONE) {
 			if (password_verify($data->password, $GLOBALS["password"])) {
 				$token = [
-					"expires" => (new DateTime("now + 25 hours"))->format("Y-m-d H:i:s")
+					"expires" => (new DateTime("now + " . $GLOBALS["tokentime"]))->format("Y-m-d H:i:s")
 				];
 				echo json_encode([
 					"api" => "words",
 					"version" => "4.1",
 					"token" => JWT::encode($token, $GLOBALS["key"]),
-					"expires" => (new DateTime("now + 25 hours"))->format("Y-m-d H:i:s")
+					"expires" => (new DateTime("now + " . $GLOBALS["tokentime"]))->format("Y-m-d H:i:s")
 				], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 			} else {
 				echo json_encode([
