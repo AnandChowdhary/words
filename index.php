@@ -99,7 +99,7 @@
 		}
 		$decoded = JWT::decode(isset($_SERVER["HTTP_TOKEN"]) ? $_SERVER["HTTP_TOKEN"] : null, $GLOBALS["key"], array("HS256"));
 		if ($decoded && ($decoded->expires > (new DateTime("now"))->format("Y-m-d H:i:s"))) {
-			$post = json_decode(file_get_contents($GLOBALS["post_directory"] . "$post_url"));
+			$post = json_decode(file_get_contents($GLOBALS["post_directory"] . $post_url));
 			echo json_encode([
 				"api" => "words",
 				"version" => "4.1",
@@ -125,8 +125,8 @@
 		}
 		$decoded = JWT::decode(isset($_SERVER["HTTP_TOKEN"]) ? $_SERVER["HTTP_TOKEN"] : null, $GLOBALS["key"], array("HS256"));
 		if ($decoded && ($decoded->expires > (new DateTime("now"))->format("Y-m-d H:i:s"))) {
-			if (file_exists($GLOBALS["post_directory"] . "$post_url")) {
-				unlink($GLOBALS["post_directory"] . "$post_url");
+			if (file_exists($GLOBALS["post_directory"] . $post_url)) {
+				unlink($GLOBALS["post_directory"] . $post_url);
 				echo json_encode([
 					"api" => "words",
 					"version" => "4.1",
@@ -145,6 +145,59 @@
 				"version" => "4.1",
 				"error" => "Unauthenticated"
 			], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+		}
+	});
+
+	Flight::route("PUT /post/@post_url", function($post_url) {
+		header("Content-Type: application/json");
+		if (json_last_error() === JSON_ERROR_NONE) {
+			$decoded = JWT::decode(isset($_SERVER["HTTP_TOKEN"]) ? $_SERVER["HTTP_TOKEN"] : null, $GLOBALS["key"], array("HS256"));
+			if ($decoded && ($decoded->expires > (new DateTime("now"))->format("Y-m-d H:i:s"))) {
+				$data = json_decode(file_get_contents("php://input"));
+				$error = false;
+				if (!isset($data->title)) {
+					$error = true;
+				}
+				if (!isset($data->body)) {
+					$error = true;
+				}
+				if (!$error) {
+					if (file_exists($GLOBALS["post_directory"] . $post_url)) {
+						$currentDate = (new DateTime("now"))->format("YmdHis");
+						$post = [
+							"title" => encrypt_decrypt("encrypt", $data->title),
+							"date" => (new DateTime("now"))->format("Y-m-d H:i:s"),
+							"body" => encrypt_decrypt("encrypt", $data->body)
+						];
+						file_put_contents($GLOBALS["post_directory"] . $post_url, json_encode($post, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+						echo json_encode([
+							"api" => "words",
+							"version" => "4.1",
+							"updated" => true,
+							"id" => $post_url,
+							"post" => $post,
+						], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+					} else {
+						echo json_encode([
+							"api" => "words",
+							"version" => "4.1",
+							"error" => "No such file"
+						], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+					}
+				} else {
+					echo json_encode([
+						"api" => "words",
+						"version" => "4.1",
+						"error" => "field"
+					], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+				}
+			} else {
+				echo json_encode([
+					"api" => "words",
+					"version" => "4.1",
+					"error" => "Unauthenticated"
+				], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+			}
 		}
 	});
 
