@@ -19,7 +19,7 @@
 
 	$GLOBALS["key"] = "example_secure_key";
 	$GLOBALS["iv"] = "example_initialization_vector";
-	$GLOBALS["password"] = "example_password";
+	$GLOBALS["password"] = password_hash("example_password", PASSWORD_DEFAULT); // Save this as a hashed string
 
 	// https://gist.github.com/joashp/a1ae9cb30fa533f4ad94
 	function encrypt_decrypt($action, $string) {
@@ -40,7 +40,7 @@
 		header("Content-Type: application/json");
 		$data = json_decode(file_get_contents("php://input"));
 		if (json_last_error() === JSON_ERROR_NONE) {
-			if ($data->password === $GLOBALS["password"]) {
+			if (password_verify($data->password, $GLOBALS["password"])) {
 				$token = [
 					"expires" => (new DateTime("now + 25 hours"))->format("Y-m-d H:i:s")
 				];
@@ -102,12 +102,13 @@
 					$error = true;
 				}
 				if (!$error) {
+					$currentDate = (new DateTime("now"))->format("Y-m-d H:i:s");
 					$post = [
 						"title" => encrypt_decrypt("encrypt", $data->title),
-						"date" => (new DateTime("now"))->format("Y-m-d H:i:s"),
+						"date" => $currentDate,
 						"body" => encrypt_decrypt("encrypt", $data->body)
 					];
-					file_put_contents("./words/{$data->date}-" . substr(md5($data->date), 0, 10) . ".json", json_encode($post, JSON_UNESCAPED_SLASHES));
+					file_put_contents("./words/" . $currentDate . "-" . substr(md5($currentDate), 0, 10) . ".json", json_encode($post, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
 					echo json_encode([
 						"api" => "words",
 						"version" => "4.1",
