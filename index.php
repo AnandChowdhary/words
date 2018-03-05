@@ -21,7 +21,7 @@
 	$GLOBALS["post_directory"] = $metadata->files;
 	$GLOBALS["key"] = $metadata->key;
 	$GLOBALS["iv"] = $metadata->iv;
-	// This is a result of password_hash("example_password", PASSWORD_DEFAULT)
+	// The password in `meta.json` is a result of password_hash("example_password", PASSWORD_DEFAULT)
 	$GLOBALS["password"] = $metadata->password;
 
 	// https://gist.github.com/joashp/a1ae9cb30fa533f4ad94
