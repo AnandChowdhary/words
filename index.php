@@ -162,12 +162,14 @@
 				if (!isset($data->body)) {
 					$error = true;
 				}
+				if (!isset($data->date)) {
+					$error = true;
+				}
 				if (!$error) {
 					if (file_exists($GLOBALS["post_directory"] . $post_url)) {
-						$currentDate = (new DateTime("now"))->format("YmdHis");
 						$post = [
 							"title" => encrypt_decrypt("encrypt", $data->title),
-							"date" => (new DateTime("now"))->format("Y-m-d H:i:s"),
+							"date" => $data->date,
 							"body" => encrypt_decrypt("encrypt", $data->body)
 						];
 						file_put_contents($GLOBALS["post_directory"] . $post_url, json_encode($post, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
@@ -273,6 +275,18 @@
 					"error" => "Unauthenticated"
 				], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 			}
+		}
+	});
+
+	Flight::route("POST /password", function() {
+		header("Content-Type: application/json");
+		$data = json_decode(file_get_contents("php://input"));
+		if (json_last_error() === JSON_ERROR_NONE) {
+			echo json_encode([
+				"api" => "words",
+				"version" => "4.1",
+				"hash" => password_hash($data->password, PASSWORD_DEFAULT)
+			], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 		}
 	});
 
