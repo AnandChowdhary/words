@@ -1,0 +1,6 @@
+{
+	"files": "./words/",
+	"key": "example_secure_key",
+	"iv": "example_initialization_vector",
+	"password": "$2y$10$wc5FaC/hnNipOAMHLh4yxuaYFBm0wSa1mE07mH187JSDCumtujfk6"
+}

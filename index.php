@@ -17,9 +17,12 @@
 		exit(0);
 	}
 
-	$GLOBALS["key"] = "example_secure_key";
-	$GLOBALS["iv"] = "example_initialization_vector";
-	$GLOBALS["password"] = password_hash("example_password", PASSWORD_DEFAULT); // Save this as a hashed string
+	$metadata = json_decode(file_get_contents("./meta.json"));
+	$GLOBALS["post_directory"] = $metadata->files;
+	$GLOBALS["key"] = $metadata->key;
+	$GLOBALS["iv"] = $metadata->iv;
+	// This is a result of password_hash("example_password", PASSWORD_DEFAULT)
+	$GLOBALS["password"] = $metadata->password;
 
 	// https://gist.github.com/joashp/a1ae9cb30fa533f4ad94
 	function encrypt_decrypt($action, $string) {
@@ -66,18 +69,18 @@
 			$decoded = JWT::decode(isset($_SERVER["HTTP_TOKEN"]) ? $_SERVER["HTTP_TOKEN"] : null, $GLOBALS["key"], array("HS256"));
 			if ($decoded && ($decoded->expires > (new DateTime("now"))->format("Y-m-d H:i:s"))) {
 				$files = [];
-				$metas = array_diff(scandir("./words"), array(".", ".."));
+				$metas = array_diff(scandir($GLOBALS["post_directory"]), array(".", ".."));
 				foreach ($metas as $meta => $val) {
 					array_push($files, [
 						"id" => $val,
-						"title" => encrypt_decrypt("decrypt", json_decode(file_get_contents("./words/$val"))->title),
-						"date" => json_decode(file_get_contents("./words/$val"))->date,
+						"title" => encrypt_decrypt("decrypt", json_decode(file_get_contents($GLOBALS["post_directory"] . "$val"))->title),
+						"date" => json_decode(file_get_contents($GLOBALS["post_directory"] . "$val"))->date,
 					]);
 				}
 				echo json_encode([
 					"api" => "words",
 					"version" => "4.1",
-					"posts" => $files,
+					"posts" => $files
 				], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 			} else {
 				echo json_encode([
@@ -96,7 +99,7 @@
 		}
 		$decoded = JWT::decode(isset($_SERVER["HTTP_TOKEN"]) ? $_SERVER["HTTP_TOKEN"] : null, $GLOBALS["key"], array("HS256"));
 		if ($decoded && ($decoded->expires > (new DateTime("now"))->format("Y-m-d H:i:s"))) {
-			$post = json_decode(file_get_contents("./words/$post_url"));
+			$post = json_decode(file_get_contents($GLOBALS["post_directory"] . "$post_url"));
 			echo json_encode([
 				"api" => "words",
 				"version" => "4.1",
@@ -122,8 +125,8 @@
 		}
 		$decoded = JWT::decode(isset($_SERVER["HTTP_TOKEN"]) ? $_SERVER["HTTP_TOKEN"] : null, $GLOBALS["key"], array("HS256"));
 		if ($decoded && ($decoded->expires > (new DateTime("now"))->format("Y-m-d H:i:s"))) {
-			if (file_exists("./words/$post_url")) {
-				unlink("./words/$post_url");
+			if (file_exists($GLOBALS["post_directory"] . "$post_url")) {
+				unlink($GLOBALS["post_directory"] . "$post_url");
 				echo json_encode([
 					"api" => "words",
 					"version" => "4.1",
@@ -165,7 +168,7 @@
 						"date" => (new DateTime("now"))->format("Y-m-d H:i:s"),
 						"body" => encrypt_decrypt("encrypt", $data->body)
 					];
-					file_put_contents("./words/" . $currentDate . substr(md5($currentDate), 0, 10) . ".json", json_encode($post, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+					file_put_contents($GLOBALS["post_directory"] . "" . $currentDate . substr(md5($currentDate), 0, 10) . ".json", json_encode($post, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
 					echo json_encode([
 						"api" => "words",
 						"version" => "4.1",
