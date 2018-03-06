@@ -21,7 +21,8 @@ It looks something like this:
 	"files": "./words/",
 	"key": "example_secure_key",
 	"iv": "example_initialization_vector",
-	"password": "$2y$10$wc5FaC/hnNipOAMHLh4yxuaYFBm0wSa1mE07mH187JSDCumtujfk6"
+	"password": "$2y$10$wc5FaC/hnNipOAMHLh4yxuaYFBm0wSa1mE07mH187JSDCumtujfk6",
+	"token_valid_for": "25 hours"
 }
 ```
 
