@@ -4,7 +4,7 @@ Words is a platform to _just_ write. It doesn't come in the way of you and your 
 
 ## How it works
 
-This repo contains a REST CRUD API for the backend of Words, a platform I made to write and share words with my significant other.
+This repo contains a REST CRUD API for the backend of Words, a platform I made to write and share words with my significant other. You can make a nice frontend to make it all work, or use my repo [vue-words](https://github.com/AnandChowdhary/vue-words) for a headstart.
 
 It uses the crypto library [OpenSSL](http://php.net/manual/en/intro.openssl.php) to securely encrypt every word you write, with token-based authentication using [JWT](https://github.com/firebase/php-jwt).
 
@@ -36,6 +36,8 @@ An example post looks like then when saved:
     "body": "R2d5SkkrTTJrVWlCWjZubkU4T3VvTElPRU1mdzNkM1cySFJGTmNJTTlGWT0="
 }
 ```
+
+So, only when you have the same `meta.json` parameters will you be able to decrypt the contents and view the post.
 
 ## REST API
 
